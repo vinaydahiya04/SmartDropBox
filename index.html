@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socket Thing1</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Protoype UI</h1>
+    <div class="UI">
+      <div class="boxes">
+        <label class="switch">
+          <input type="checkbox" onclick="toggle()" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="boxes">
+        <span id="weight">Loading</span>
+      </div>
+    </div>
+  </body>
+  <script>
+    var state;
+    // Create WebSocket connection.
+    const socket = new WebSocket("ws://localhost:3000");
+
+    // Connection opened
+    socket.addEventListener("open", function (event) {
+      console.log("Connected to WS Server");
+    });
+
+    // Listen for messages
+    socket.addEventListener("message", function (event) {
+      console.log("Message from server ");
+      state = JSON.parse(event.data);
+      console.log(state);
+
+      let W = state.weight;
+      document.getElementById("weight").innerText = `${W} kg`;
+    });
+
+    const sendMessage = () => {
+      socket.send("Hello From Client1!");
+    };
+
+    function toggle() {
+      state.state = (state.state + 1) % 2;
+      console.log(state);
+      socket.send(JSON.stringify(state));
+    }
+  </script>
+</html>
